@@ -1,6 +1,6 @@
 .child1{
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
 }
 
@@ -35,4 +35,8 @@ p{
 
 .closeRect{
   fill: #e41a1c;
+}
+
+.legend{
+  display: flex;
 }

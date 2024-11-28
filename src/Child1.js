@@ -70,12 +70,21 @@ class Child1 extends Component {
       .join('path')
       .style('fill', (d, i) => colors[i])
       .attr('d', d => areaGenerator(d));
-  
-    container.selectAll('rect')
+
+    var legend = d3.select('.legend')
+      .selectAll('rect')
       .data(['GPT_4', 'Gemini', 'PaLM_2', 'Claude', 'LLaMA_3_1'])
       .join('rect')
-      .attr('x')
-
+      .attr('width', 20)
+      .attr('height', 20)
+      .style('fill', (d, i) => colors[i])
+      .attr('class', 'legend-item');
+      
+    legend.join('p')
+      .text(d => d)  // Display the model name
+      .style('margin-left', '5px')
+      .style('display', 'inline-block')
+      .style('vertical-align', 'middle');
   }
   
   
@@ -92,6 +101,9 @@ class Child1 extends Component {
             </g>
           </svg>
         </div>
+
+        <div className="legend">
+         </div>
       </div>
     );
   }
