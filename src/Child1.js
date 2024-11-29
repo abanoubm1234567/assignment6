@@ -12,7 +12,7 @@ class Child1 extends Component {
   }
 
   componentDidUpdate() {
-    console.log(this.props.csv_data);
+    //console.log(this.props.csv_data);
   
     const margin = { top: 70, right: 60, bottom: 50, left: 80 };
     const width = 400;
@@ -56,7 +56,7 @@ class Child1 extends Component {
       .attr('class', 'tooltip')
       .style('position', 'absolute')
       .style('visibility', 'hidden')
-      .style('background-color', 'rgba(0, 0, 0, 0.7)')
+      .style('background-color', 'rgba(250, 250, 250, 0.9)')
       .style('color', 'white')
       .style('padding', '5px')
       .style('border-radius', '4px')
@@ -64,11 +64,11 @@ class Child1 extends Component {
 
     var stack = d3.stack()
       .order(d3.stackOrderNone)
-      .keys(['GPT_4', 'Gemini', 'PaLM_2', 'Claude', 'LLaMA_3_1'])
+      .keys([  'LLaMA_3_1', 'Claude','PaLM_2','Gemini','GPT_4',])
       .offset(d3.stackOffsetWiggle);
   
     var stackedSeries = stack(data);
-    console.log(stackedSeries)
+    //console.log(stackedSeries)
 
     var areaGenerator = d3.area()
       .x(d => xScale(d.data.Date))
@@ -76,22 +76,73 @@ class Child1 extends Component {
       .y1(d => yScale(d[1]))
       .curve(d3.curveCardinal);
   
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'];
+      const colorsToCompany = {
+        'LLaMA_3_1': colors[0], 'Claude': colors[1],'PaLM_2': colors[2],'Gemini':colors[3],'GPT_4':colors[4],
+      }
+    
     container.selectAll('path')
       .data(stackedSeries)
       .join('path')
       .style('fill', (d, i) => colors[i])
       .attr('d', d => areaGenerator(d))
       .on('mouseover', function(event, d) {
-        tooltip.style('visibility', 'visible').html(`this is the tooltip for ${(d)=>d.data}`);
+        //console.log(data)
+        var barData = data.map(dataSet=> ({
+          mon: months[dataSet.Date.getMonth()],
+          num: dataSet[d.key]
+        }))
+        console.log(barData)
+        console.log(d.key)
+
+        tooltip.style('visibility', 'visible').html('');
+
+        const barMargins = {
+          top: 30, bottom: 30, right: 45, left: 40
+        }
+
+        const ttHeight = 200;
+        const ttWidth = 300;
+
+        var toolTipSVG = tooltip.append('svg').attr('class','tooltip-svg')
+        .attr('height',ttHeight+barMargins.top + barMargins.bottom)
+        .attr('width',ttWidth + barMargins.left + barMargins.right);
+
+        const barContainer = toolTipSVG.join('g').attr("transform", `translate(${barMargins.left},${barMargins.top})`);
+
+        var barXScale = d3.scaleBand().domain(barData.map(d => d.mon)).range([0,ttWidth]).padding(0.15);
+        var barYScale = d3.scaleLinear().domain([0,d3.max(barData, d => d.num)]).range([ttHeight,0]);
+
+        barContainer.selectAll(".bar-x-axis").data([null]).join('g').attr('class',"bar-x-axis")
+          .attr("transform", `translate(${25},${ttHeight+1})`)
+          .call(d3.axisBottom(barXScale)).attr('stroke','black').selectAll("path, line")
+          .style("stroke", "black");
+          
+          
+        barContainer.selectAll(".bar-y-axis").data([null]).join('g').attr('class',"bar-y-axis")
+          .attr("transform", `translate(${25},${0})`)
+          .call(d3.axisLeft(barYScale)).attr('stroke','black').selectAll("path, line")
+          .style("stroke", "black");
+
+        barContainer.selectAll('rect')
+        .data(barData)
+        .join('rect')
+        .attr('x',d=>barXScale(d.mon))
+        .attr('y',d=>barYScale(d.num))
+        .attr('width', barXScale.bandwidth())
+        .attr('height', d=> ttHeight - barYScale(d.num))
+        .attr('fill',colorsToCompany[d.key])
+        .attr("transform", `translate(${25},${0})`)
+
       })
       .on('mousemove', function(event) {
         tooltip.style('top', (event.pageY + 10) + 'px').style('left', (event.pageX + 10) + 'px');
       })
       .on('mouseout', function() {
         tooltip.style('visibility', 'hidden');
-      });;
+      });
 
-      const legendData = ['GPT_4', 'Gemini', 'PaLM_2', 'Claude', 'LLaMA_3_1'];
+      const legendData = ['GPT-4', 'Gemini', 'PaLM-2', 'Claude',  'LLaMA-3.1'];
 
       const legend = d3.select('.legend')
         .selectAll('.legend-item')
@@ -100,7 +151,6 @@ class Child1 extends Component {
         .attr('class', 'legend-item')
         .attr('transform', (d,i) =>`translate( 0,${i*23})`);
       
-     
       legend.selectAll('rect')
         .data(d => [d]) 
         .join('rect')
@@ -110,7 +160,6 @@ class Child1 extends Component {
         .attr('y', 0)
         .style('fill', (d, i) => colors[4-legendData.indexOf(d)]);
       
-     
       legend.selectAll('text')
         .data(d => [d])
         .join('text')
@@ -118,8 +167,6 @@ class Child1 extends Component {
         .attr('y', 15) 
         .text(d => d)
 
-    
-      
   }
   
   
