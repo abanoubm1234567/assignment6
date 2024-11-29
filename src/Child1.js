@@ -52,13 +52,24 @@ class Child1 extends Component {
   
     const colors = ['#e41a1c', '#377eb8', '#4daf4a', '#984ea3', '#ff7f00'];
   
+    const tooltip = d3.select('body').append('div')
+      .attr('class', 'tooltip')
+      .style('position', 'absolute')
+      .style('visibility', 'hidden')
+      .style('background-color', 'rgba(0, 0, 0, 0.7)')
+      .style('color', 'white')
+      .style('padding', '5px')
+      .style('border-radius', '4px')
+      .style('pointer-events', 'none');
+
     var stack = d3.stack()
       .order(d3.stackOrderNone)
       .keys(['GPT_4', 'Gemini', 'PaLM_2', 'Claude', 'LLaMA_3_1'])
       .offset(d3.stackOffsetWiggle);
   
     var stackedSeries = stack(data);
-  
+    console.log(stackedSeries)
+
     var areaGenerator = d3.area()
       .x(d => xScale(d.data.Date))
       .y0(d => yScale(d[0]))
@@ -69,7 +80,16 @@ class Child1 extends Component {
       .data(stackedSeries)
       .join('path')
       .style('fill', (d, i) => colors[i])
-      .attr('d', d => areaGenerator(d));
+      .attr('d', d => areaGenerator(d))
+      .on('mouseover', function(event, d) {
+        tooltip.style('visibility', 'visible').html(`this is the tooltip for ${(d)=>d.data}`);
+      })
+      .on('mousemove', function(event) {
+        tooltip.style('top', (event.pageY + 10) + 'px').style('left', (event.pageX + 10) + 'px');
+      })
+      .on('mouseout', function() {
+        tooltip.style('visibility', 'hidden');
+      });;
 
       const legendData = ['GPT_4', 'Gemini', 'PaLM_2', 'Claude', 'LLaMA_3_1'];
 
@@ -78,7 +98,7 @@ class Child1 extends Component {
         .data(legendData)
         .join('g')
         .attr('class', 'legend-item')
-        .attr('transform', (d, i) => `translate(0, ${i * 23})`);
+        .attr('transform', (d,i) =>`translate( 0,${i*23})`);
       
      
       legend.selectAll('rect')
@@ -97,8 +117,8 @@ class Child1 extends Component {
         .attr('x', 30)
         .attr('y', 15) 
         .text(d => d)
-        .style('font-size', '14px')
-        .style('fill', '#333');
+
+    
       
   }
   
