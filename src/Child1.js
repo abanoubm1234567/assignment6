@@ -71,20 +71,35 @@ class Child1 extends Component {
       .style('fill', (d, i) => colors[i])
       .attr('d', d => areaGenerator(d));
 
-    var legend = d3.select('.legend')
-      .selectAll('rect')
-      .data(['GPT_4', 'Gemini', 'PaLM_2', 'Claude', 'LLaMA_3_1'])
-      .join('rect')
-      .attr('width', 20)
-      .attr('height', 20)
-      .style('fill', (d, i) => colors[i])
-      .attr('class', 'legend-item');
+      const legendData = ['GPT_4', 'Gemini', 'PaLM_2', 'Claude', 'LLaMA_3_1'];
+
+      const legend = d3.select('.legend')
+        .selectAll('.legend-item')
+        .data(legendData)
+        .join('g')
+        .attr('class', 'legend-item')
+        .attr('transform', (d, i) => `translate(0, ${i * 23})`);
       
-    legend.join('p')
-      .text(d => d)  // Display the model name
-      .style('margin-left', '5px')
-      .style('display', 'inline-block')
-      .style('vertical-align', 'middle');
+     
+      legend.selectAll('rect')
+        .data(d => [d]) 
+        .join('rect')
+        .attr('width', 20)
+        .attr('height', 20)
+        .attr('x', 0)
+        .attr('y', 0)
+        .style('fill', (d, i) => colors[4-legendData.indexOf(d)]);
+      
+     
+      legend.selectAll('text')
+        .data(d => [d])
+        .join('text')
+        .attr('x', 30)
+        .attr('y', 15) 
+        .text(d => d)
+        .style('font-size', '14px')
+        .style('fill', '#333');
+      
   }
   
   
@@ -101,9 +116,8 @@ class Child1 extends Component {
             </g>
           </svg>
         </div>
-
-        <div className="legend">
-         </div>
+        <svg className="legend" width={200} height={120}>
+         </svg>
       </div>
     );
   }

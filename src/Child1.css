@@ -39,4 +39,5 @@ p{
 
 .legend{
   display: flex;
+  flex-direction: column;
 }
