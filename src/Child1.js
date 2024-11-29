@@ -114,13 +114,13 @@ class Child1 extends Component {
         var barYScale = d3.scaleLinear().domain([0,d3.max(barData, d => d.num)]).range([ttHeight,0]);
 
         barContainer.selectAll(".bar-x-axis").data([null]).join('g').attr('class',"bar-x-axis")
-          .attr("transform", `translate(${25},${ttHeight+1})`)
+          .attr("transform", `translate(${25},${ttHeight+21})`)
           .call(d3.axisBottom(barXScale)).attr('stroke','black').selectAll("path, line")
           .style("stroke", "black");
           
           
         barContainer.selectAll(".bar-y-axis").data([null]).join('g').attr('class',"bar-y-axis")
-          .attr("transform", `translate(${25},${0})`)
+          .attr("transform", `translate(${25},${20})`)
           .call(d3.axisLeft(barYScale)).attr('stroke','black').selectAll("path, line")
           .style("stroke", "black");
 
@@ -132,7 +132,7 @@ class Child1 extends Component {
         .attr('width', barXScale.bandwidth())
         .attr('height', d=> ttHeight - barYScale(d.num))
         .attr('fill',colorsToCompany[d.key])
-        .attr("transform", `translate(${25},${0})`)
+        .attr("transform", `translate(${25},${20})`)
 
       })
       .on('mousemove', function(event) {
