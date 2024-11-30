@@ -52,7 +52,7 @@ class Child1 extends Component {
   
     const colors = ['#e41a1c', '#377eb8', '#4daf4a', '#984ea3', '#ff7f00'];
   
-    const tooltip = d3.select('body').append('div')
+    const tooltip = d3.select('body').append('div') //here
       .attr('class', 'tooltip')
       .style('position', 'absolute')
       .style('visibility', 'hidden')
@@ -139,7 +139,7 @@ class Child1 extends Component {
           .attr('fill',oldColor)
           .attr('setting', oldColor = colorsToCompany[d.key])
           .transition()
-          .duration(1000)
+          .duration(500)
           .attr('fill',colorsToCompany[d.key]);
           
         
