@@ -81,6 +81,8 @@ class Child1 extends Component {
         'LLaMA_3_1': colors[0], 'Claude': colors[1],'PaLM_2': colors[2],'Gemini':colors[3],'GPT_4':colors[4],
       }
     
+      var oldColor = 'black';
+
     container.selectAll('path')
       .data(stackedSeries)
       .join('path')
@@ -101,8 +103,8 @@ class Child1 extends Component {
           top: 30, bottom: 30, right: 45, left: 40
         }
 
-        const ttHeight = 200;
-        const ttWidth = 300;
+        const ttHeight = 125;
+        const ttWidth = 250;
 
         var toolTipSVG = tooltip.append('svg').attr('class','tooltip-svg')
         .attr('height',ttHeight+barMargins.top + barMargins.bottom)
@@ -124,22 +126,30 @@ class Child1 extends Component {
           .call(d3.axisLeft(barYScale)).attr('stroke','black').selectAll("path, line")
           .style("stroke", "black");
 
-        barContainer.selectAll('rect')
+
+
+        toolTipSVG.selectAll('rect')
         .data(barData)
         .join('rect')
-        .attr('x',d=>barXScale(d.mon))
-        .attr('y',d=>barYScale(d.num))
-        .attr('width', barXScale.bandwidth())
-        .attr('height', d=> ttHeight - barYScale(d.num))
-        .attr('fill',colorsToCompany[d.key])
-        .attr("transform", `translate(${25},${20})`)
-
+          .attr('x',d=>barXScale(d.mon))
+          .attr('y',d=>barYScale(d.num))
+          .attr('width', barXScale.bandwidth())
+          .attr('height', d=> ttHeight - barYScale(d.num))
+          .attr("transform", `translate(${25},${20})`)
+          .attr('fill',oldColor)
+          .attr('setting', oldColor = colorsToCompany[d.key])
+          .transition()
+          .duration(1000)
+          .attr('fill',colorsToCompany[d.key]);
+          
+        
+        
       })
       .on('mousemove', function(event) {
         tooltip.style('top', (event.pageY + 10) + 'px').style('left', (event.pageX + 10) + 'px');
       })
       .on('mouseout', function() {
-        tooltip.style('visibility', 'hidden');
+        tooltip.style('visibility', 'hidden')
       });
 
       const legendData = ['GPT-4', 'Gemini', 'PaLM-2', 'Claude',  'LLaMA-3.1'];
